@@ -78,6 +78,7 @@ coder::array<bool, 2U> b_catch_up;
 coder::array<signed char, 2U> direction;
 double ts_rollout;
 
+// set initial state
 void init_callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
   b_init_updated = true;
@@ -92,6 +93,7 @@ void init_callback(const nav_msgs::Odometry::ConstPtr& msg)
   State_start[(2 + num_dim * 2)] = 0.0;                       //Initial Z Acceleration
 }
 
+// add waypoint to waypoint list
 void wayp_callback(const nav_msgs::Odometry::ConstPtr& msg)
 {
   b_wayp_updated = true;
@@ -102,6 +104,7 @@ void wayp_callback(const nav_msgs::Odometry::ConstPtr& msg)
   Waypoints[(0 + num_dim * 1) + num_dim * 5 * idx_wayp] = msg->twist.twist.linear.x; //Waypoint X Velocity
   Waypoints[(1 + num_dim * 1) + num_dim * 5 * idx_wayp] = msg->twist.twist.linear.y; //Waypoint Y Velocity
   Waypoints[(2 + num_dim * 1) + num_dim * 5 * idx_wayp] = msg->twist.twist.linear.z; //Waypoint Z Velocity
+
   Waypoints[(0 + num_dim * 2) + num_dim * 5 * idx_wayp] = 0.0;                       //Waypoint X Acceleration
   Waypoints[(1 + num_dim * 2) + num_dim * 5 * idx_wayp] = 0.0;                       //Waypoint Y Acceleration
   Waypoints[(2 + num_dim * 2) + num_dim * 5 * idx_wayp] = 0.0;                       //Waypoint Z Acceleration
@@ -209,7 +212,9 @@ int main(int argc, char **argv)
       b_wayp_updated = false;
       b_init_updated = false;
  
-      topico_wrapper(State_start, Waypoints, V_max, V_min, A_max, A_min, J_max, J_min, A_global, b_sync_V, b_sync_A, b_sync_J, b_sync_W, b_rotate, b_hard_V_lim, b_catch_up, direction, ts_rollout, J_setp_struct,solution_out, T_waypoints, P, V, A, J, t);
+      topico_wrapper(State_start, Waypoints, V_max, V_min, A_max, A_min, J_max, J_min, A_global,
+                     b_sync_V, b_sync_A, b_sync_J, b_sync_W, b_rotate, b_hard_V_lim, b_catch_up,
+                      direction, ts_rollout, J_setp_struct, solution_out, T_waypoints, P, V, A, J, t);
 
       int size_rollout = P.size(1);
       path_rollout.poses.resize(size_rollout);
